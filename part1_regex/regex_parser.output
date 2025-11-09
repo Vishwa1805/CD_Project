@@ -1,0 +1,193 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: expr
+
+    2 expr: term
+    3     | expr PIPE term
+
+    4 term: factor
+    5     | term factor
+
+    6 factor: atom
+    7       | factor STAR
+
+    8 atom: CHAR
+    9     | LPAREN expr RPAREN
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+CHAR (258) 8
+LPAREN (259) 9
+RPAREN (260) 9
+PIPE (261) 3
+STAR (262) 7
+CONCAT (263)
+
+
+Nonterminals, with rules where they appear
+
+$accept (9)
+    on left: 0
+program (10)
+    on left: 1, on right: 0
+expr (11)
+    on left: 2 3, on right: 1 3 9
+term (12)
+    on left: 4 5, on right: 2 3 5
+factor (13)
+    on left: 6 7, on right: 4 5 7
+atom (14)
+    on left: 8 9, on right: 6
+
+
+State 0
+
+    0 $accept: . program $end
+
+    CHAR    shift, and go to state 1
+    LPAREN  shift, and go to state 2
+
+    program  go to state 3
+    expr     go to state 4
+    term     go to state 5
+    factor   go to state 6
+    atom     go to state 7
+
+
+State 1
+
+    8 atom: CHAR .
+
+    $default  reduce using rule 8 (atom)
+
+
+State 2
+
+    9 atom: LPAREN . expr RPAREN
+
+    CHAR    shift, and go to state 1
+    LPAREN  shift, and go to state 2
+
+    expr    go to state 8
+    term    go to state 5
+    factor  go to state 6
+    atom    go to state 7
+
+
+State 3
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 9
+
+
+State 4
+
+    1 program: expr .
+    3 expr: expr . PIPE term
+
+    PIPE  shift, and go to state 10
+
+    $default  reduce using rule 1 (program)
+
+
+State 5
+
+    2 expr: term .
+    5 term: term . factor
+
+    CHAR    shift, and go to state 1
+    LPAREN  shift, and go to state 2
+
+    $default  reduce using rule 2 (expr)
+
+    factor  go to state 11
+    atom    go to state 7
+
+
+State 6
+
+    4 term: factor .
+    7 factor: factor . STAR
+
+    STAR  shift, and go to state 12
+
+    $default  reduce using rule 4 (term)
+
+
+State 7
+
+    6 factor: atom .
+
+    $default  reduce using rule 6 (factor)
+
+
+State 8
+
+    3 expr: expr . PIPE term
+    9 atom: LPAREN expr . RPAREN
+
+    RPAREN  shift, and go to state 13
+    PIPE    shift, and go to state 10
+
+
+State 9
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 10
+
+    3 expr: expr PIPE . term
+
+    CHAR    shift, and go to state 1
+    LPAREN  shift, and go to state 2
+
+    term    go to state 14
+    factor  go to state 6
+    atom    go to state 7
+
+
+State 11
+
+    5 term: term factor .
+    7 factor: factor . STAR
+
+    STAR  shift, and go to state 12
+
+    $default  reduce using rule 5 (term)
+
+
+State 12
+
+    7 factor: factor STAR .
+
+    $default  reduce using rule 7 (factor)
+
+
+State 13
+
+    9 atom: LPAREN expr RPAREN .
+
+    $default  reduce using rule 9 (atom)
+
+
+State 14
+
+    3 expr: expr PIPE term .
+    5 term: term . factor
+
+    CHAR    shift, and go to state 1
+    LPAREN  shift, and go to state 2
+
+    $default  reduce using rule 3 (expr)
+
+    factor  go to state 11
+    atom    go to state 7
